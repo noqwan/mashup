@@ -86,17 +86,4 @@ public class MovieModelImpl implements MovieModel {
 		return result;
 	}
 
-	/*To complete*/
-	
-/*	@Override
-	public Sale buyMovie(Long movieId, String userId, String creditCardNumber)
-			throws InstanceNotFoundException, InputValidationException {}*/
-
-/*	@Override
-	public Sale findSale(Long saleId) throws InstanceNotFoundException, SaleExpirationException {}*/
-
-/*	private static String getMovieUrl(Long movieId) {
-		return BASE_URL + movieId + "/" + UUID.randomUUID().toString();
-	}
-	*/
 }

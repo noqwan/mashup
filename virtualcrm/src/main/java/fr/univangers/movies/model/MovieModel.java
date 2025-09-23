@@ -21,8 +21,4 @@ public interface MovieModel {
 
     public List<Movie> findMovies(String keywords);
 
-    
-    /*To complete*/
-    //public Sale buyMovie(Long movieId, String userId, String creditCardNumber) throws InstanceNotFoundException, InputValidationException;
-    //public Sale findSale(Long saleId) throws InstanceNotFoundException, SaleExpirationException;
 }

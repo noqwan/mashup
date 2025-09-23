@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class RestClientMovieService implements ClientMovieService {
-	
+
     private final static String ENDPOINT_ADDRESS_PARAMETER = "http://localhost:8080/virtualcrm/";
     private String endpointAddress;
 
@@ -44,7 +44,6 @@ public class RestClientMovieService implements ClientMovieService {
                     bodyStream(toInputStream(movie), ContentType.create("application/json")).
                     execute().returnResponse();
 
-            System.out.println("before checking");
             validateStatusCode(HttpStatus.SC_CREATED, response);
 
             return JsonToClientMovieDtoConversor.toClientMovieDto(response.getEntity().getContent()).getMovieId();
@@ -111,57 +110,6 @@ System.out.println("response ok");
             return JsonToClientMovieDtoConversor.toClientMovieDtos(response.getEntity()
                     .getContent());
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Override
-    public Long buyMovie(Long movieId, String userId, String creditCardNumber)
-            throws InstanceNotFoundException, InputValidationException {
-    	//return (long) 1;
-
-        try {
-
-            ClassicHttpResponse response = (ClassicHttpResponse) Request.post(getEndpointAddress() + "sales").
-                    bodyForm(
-                            Form.form().
-                                    add("movieId", Long.toString(movieId)).
-                                    add("userId", userId).
-                                    add("creditCardNumber", creditCardNumber).
-                                    build()).
-                    execute().returnResponse();
-
-            validateStatusCode(HttpStatus.SC_CREATED, response);
-
-            return JsonToClientSaleDtoConversor.toClientSaleDto(
-                    response.getEntity().getContent()).getSaleId();
-
-        } catch (InputValidationException | InstanceNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Override
-    public String getMovieUrl(Long saleId) throws InstanceNotFoundException,
-            ClientSaleExpirationException {
-
-        try {
-
-            ClassicHttpResponse response = (ClassicHttpResponse) Request.get(getEndpointAddress() + "sales/" + saleId).
-                    execute().returnResponse();
-
-            validateStatusCode(HttpStatus.SC_OK, response);
-
-            return JsonToClientSaleDtoConversor.toClientSaleDto(
-                    response.getEntity().getContent()).getMovieUrl();
-
-        } catch (InstanceNotFoundException | ClientSaleExpirationException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
