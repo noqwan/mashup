@@ -21,8 +21,5 @@ public interface MovieService {
     public RestMovieDto findMovie(Long movieId) throws InstanceNotFoundRestException;
 
     public List<RestMovieDto> findMovies(String keywords);
-    
-    /*To implement*/
-    //public RestSaleDto buyMovie(Long movieId, String userId, String creditCardNumber) throws InstanceNotFoundRestException, InputValidationRestException;
-    //public RestSaleDto findSale(Long saleId) throws InstanceNotFoundRestException, SaleExpirationRestException;
+
 }

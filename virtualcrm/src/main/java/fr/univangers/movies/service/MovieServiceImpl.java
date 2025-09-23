@@ -84,9 +84,6 @@ public class MovieServiceImpl implements MovieService {
     	List<Movie> l = MovieModelFactory.getModel().findMovies(keywords);
     	return MovieToRestMovieDtoConversor.toRestMovieDtos(l);	
     }
-    
-    /*To implement*/
-    //public RestSaleDto buyMovie(Long movieId, String userId, String creditCardNumber) throws InstanceNotFoundRestException, InputValidationRestException;
-    //public RestSaleDto findSale(Long saleId) throws InstanceNotFoundRestException, SaleExpirationRestException;
+
     
 }

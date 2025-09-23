@@ -23,10 +23,4 @@ public interface ClientMovieService {
 
     public List<ClientMovieDto> findMovies(String keywords);
 
-    public Long buyMovie(Long movieId, String userId, String creditCardNumber)
-            throws InstanceNotFoundException, InputValidationException;
-
-    public String getMovieUrl(Long saleId)
-            throws InstanceNotFoundException, ClientSaleExpirationException;
-
 }
