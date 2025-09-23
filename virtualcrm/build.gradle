@@ -27,10 +27,10 @@ test {
     useJUnitPlatform()
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-
-
 farm {
     webapp project
 }
-sourceCompatibility = JavaVersion.VERSION_18
+
+java {
+    sourceCompatibility = '17'
+}

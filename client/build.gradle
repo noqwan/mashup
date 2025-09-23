@@ -32,12 +32,14 @@ compileThrift {
     generator 'java', 'private-members'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-
 jar {
     manifest {
         attributes 'Main-Class': 'org.example.client.Main'
     }
+}
+
+java {
+    sourceCompatibility = '17'
 }
 
 shadowJar {
@@ -46,6 +48,4 @@ shadowJar {
     }
 }
 
-
-sourceCompatibility = JavaVersion.VERSION_18
 
