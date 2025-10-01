@@ -1,26 +1,28 @@
 package org.internal.model;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class Lead {
 
-  public int id;
-  public String lastNamefirstName;
-  public double annualRevenue;
-  public String phone;
-  public Calendar creationDate;
+  private int id;
+  private String lastNamefirstName;
+  private double annualRevenue;
+  private String phone;
+  private Calendar creationDate;
   private String company;
   private String state;
   private String street;
   private String postalCode;
   private String city;
+
   private String country;
 
-  public Lead() {
+  private Lead() {
 
   }
 
-  public Lead(int id, String lastNamefirstName, double annualRevenue, String phone,
+  private Lead(int id, String lastNamefirstName, double annualRevenue, String phone,
       Calendar creationDate, String company, String state, String street, String postalCode,
       String city, String country) {
     this.id = id;
@@ -36,12 +38,12 @@ public class Lead {
     this.country = country;
   }
 
-  public String getCompany() {
-    return company;
+  public double getAnnualRevenue() {
+    return annualRevenue;
   }
 
-  public void setCompany(String company) {
-    this.company = company;
+  public void setAnnualRevenue(double annualRevenue) {
+    this.annualRevenue = annualRevenue;
   }
 
   public int getId() {
@@ -60,14 +62,6 @@ public class Lead {
     this.lastNamefirstName = lastNamefirstName;
   }
 
-  public double getAnnualRevenue() {
-    return annualRevenue;
-  }
-
-  public void setAnnualRevenue(double annualRevenue) {
-    this.annualRevenue = annualRevenue;
-  }
-
   public String getPhone() {
     return phone;
   }
@@ -82,6 +76,14 @@ public class Lead {
 
   public void setCreationDate(Calendar creationDate) {
     this.creationDate = creationDate;
+  }
+
+  public String getCompany() {
+    return company;
+  }
+
+  public void setCompany(String company) {
+    this.company = company;
   }
 
   public String getState() {
@@ -122,5 +124,19 @@ public class Lead {
 
   public void setCountry(String country) {
     this.country = country;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Lead lead = (Lead) o;
+    return id == lead.getId();
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id);
   }
 }
