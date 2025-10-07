@@ -1,8 +1,8 @@
 package fr.univangers.movies.service.PositionClient;
 
-import fr.univangers.movies.model.Position;
+import fr.univangers.movies.model.PositionDTO;
 
 public interface PositionClient {
 
-    public Position getPosition(String street, String postalCode, String city, String country);
+    PositionDTO getPositionDTO(String street, String postalCode, String city, String country);
 }
