@@ -18,10 +18,9 @@ dependencies {
 //}
 
 
-
-farm{
+farm {
     webapp ':virtualcrm'
-    webapp ':internalcrm'
+    // webapp ':internalcrm'
 
     gretty {
         httpPort = project.hasProperty("httpPort") ? project.httpPort as int : 8080
