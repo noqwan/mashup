@@ -22,7 +22,6 @@ dependencies {
 }
 
 
-
 compileThrift {
     thriftExecutable "/usr/bin/thrift"
     sourceDir "$projectDir/src/main/thrift"
@@ -52,6 +51,6 @@ war {
 }*/
 
 
-farm {
-    webapp project
-}
+//farm {
+//    webapp project
+//}
