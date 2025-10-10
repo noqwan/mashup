@@ -18,11 +18,11 @@ public class Lead {
 
   private String country;
 
-  private Lead() {
+  public Lead() {
 
   }
 
-  private Lead(int id, String lastNamefirstName, double annualRevenue, String phone,
+  public Lead(int id, String lastNamefirstName, double annualRevenue, String phone,
       Calendar creationDate, String company, String state, String street, String postalCode,
       String city, String country) {
     this.id = id;

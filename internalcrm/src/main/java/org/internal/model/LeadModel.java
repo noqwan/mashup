@@ -2,14 +2,20 @@ package org.internal.model;
 
 import java.util.Calendar;
 import java.util.List;
+import org.internal.model.exception.NoSuchLeadException;
+import org.internal.model.exception.WrongOrderForDateException;
+import org.internal.model.exception.WrongOrderForRevenueException;
+import org.internal.model.exception.WrongStateException;
 
 public interface LeadModel {
 
-    public List<Lead> findLeads(double lowAnnualRevenue,double highAnnualRevenue, String state);
+  List<Lead> findLeads(double lowAnnualRevenue, double highAnnualRevenue, String state)
+      throws WrongOrderForRevenueException, WrongStateException;
 
-    public List<Lead> findLeadsByDate(Calendar startDate, Calendar endDate);
+  List<Lead> findLeadsByDate(Calendar startDate, Calendar endDate)
+      throws WrongOrderForDateException;
 
-    public void addLead(Lead lead);
+  void addLead(Lead lead);
 
-    public void removeLead(Lead lead);
+  void removeLead(Lead lead) throws NoSuchLeadException;
 }

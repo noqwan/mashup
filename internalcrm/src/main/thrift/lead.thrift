@@ -40,6 +40,11 @@ exception ThriftWrongState
     1: string message
 }
 
+exception ThriftWrongDateFormat
+{
+    1: string message
+}
+
 
 
 service InternalService
@@ -54,7 +59,9 @@ service InternalService
                                         throws(1: ThriftWrongOrderForDate e)
 
   void addLead(1: InternalLeadDto lead)
+                  throws (1: ThriftWrongDateFormat e)
 
   void deleteLead(1: InternalLeadDto lead)
-                 throws (1: ThriftNoSuchLead e)
+                 throws (1: ThriftNoSuchLead e 2: ThriftWrongDateFormat ee)
+
 }
