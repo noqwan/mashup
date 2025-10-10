@@ -19,7 +19,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'org.example.client.ui.Main'
+        attributes 'Main-Class': 'org.client.ui.Main'
     }
 }
 
@@ -29,7 +29,7 @@ java {
 
 shadowJar {
     manifest {
-        attributes 'Main-Class': 'org.example.client.ui.Main'
+        attributes 'Main-Class': 'org.client.ui.Main'
     }
 }
 
