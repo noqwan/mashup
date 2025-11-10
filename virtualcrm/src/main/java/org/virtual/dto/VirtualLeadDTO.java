@@ -38,6 +38,25 @@ public class VirtualLeadDTO {
     this.pos = pos;
   }
 
+  public VirtualLeadDTO(
+      String id, String firstName, String lastName, double annualRevenue, String phone,
+      Date creationDate, String company, String state, String street, String postalCode,
+      String city, String country
+  ) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.annualRevenue = annualRevenue;
+    this.phone = phone;
+    this.creationDate = creationDate;
+    this.company = company;
+    this.state = state;
+    this.street = street;
+    this.postalCode = postalCode;
+    this.city = city;
+    this.country = country;
+  }
+
   public String getId() {
     return id;
   }

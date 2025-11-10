@@ -3,12 +3,10 @@ package org.virtual.service.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-
-@SuppressWarnings("serial")
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class InputValidationRestException extends Exception {
+public class WrongOrderForRevenue extends Exception {
 
-    public InputValidationRestException(String message) {
-        super(message);
-    }
+  public WrongOrderForRevenue(Exception e) {
+    super(e);
+  }
 }

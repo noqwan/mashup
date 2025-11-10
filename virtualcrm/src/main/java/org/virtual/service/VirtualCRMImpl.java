@@ -1,9 +1,5 @@
 package org.virtual.service;
 
-import org.virtual.dto.VirtualLeadDTO;
-import org.virtual.service.crm.CRMClient;
-import org.virtual.service.crm.InternalClient;
-import org.virtual.service.crm.SalesForceClient;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -14,12 +10,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.virtual.dto.VirtualLeadDTO;
+import org.virtual.service.crm.CRMClient;
+import org.virtual.service.crm.InternalClient;
+import org.virtual.service.crm.SalesForceClient;
+import org.virtual.service.exceptions.NoSuchLeadException;
+import org.virtual.service.exceptions.WrongDateFormatException;
+import org.virtual.service.exceptions.WrongOrderForDate;
+import org.virtual.service.exceptions.WrongOrderForRevenue;
+import org.virtual.service.exceptions.WrongState;
 
 @RestController
 public class VirtualCRMImpl implements VirtualCRMService {
 
   private final List<CRMClient<?>> clients = new ArrayList<>();
-  
+
   public VirtualCRMImpl() {
     clients.add(new SalesForceClient());
     clients.add(new InternalClient());
@@ -29,10 +34,10 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @GetMapping("/findLeads")
   @ResponseStatus(HttpStatus.OK)
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
-      String state) {
+      String state) throws WrongOrderForRevenue, WrongState {
     List<VirtualLeadDTO> result = new ArrayList<>();
     for (CRMClient<?> client : clients) {
-      result.addAll(client.findLeads());
+      result.addAll(client.findLeads(lowAnnualRevenue, highAnnualRevenue, state));
     }
     // Ici tu peux filtrer selon lowAnnualRevenue, highAnnualRevenue et state si besoin
     return result;
@@ -41,10 +46,11 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @Override
   @GetMapping("/findLeadsByDate")
   @ResponseStatus(HttpStatus.OK)
-  public List<VirtualLeadDTO> findLeadsByDate(Calendar startDate, Calendar endDate) {
+  public List<VirtualLeadDTO> findLeadsByDate(Calendar startDate, Calendar endDate)
+      throws WrongOrderForDate {
     List<VirtualLeadDTO> result = new ArrayList<>();
     for (CRMClient<?> client : clients) {
-      result.addAll(client.findLeadsByDate());
+      result.addAll(client.findLeadsByDate(startDate, endDate));
     }
     // Ici tu peux filtrer selon startDate / endDate si nécessaire
     return result;
@@ -53,7 +59,8 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @Override
   @DeleteMapping("/delete")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteLead(@RequestBody VirtualLeadDTO lead) {
+  public void deleteLead(@RequestBody VirtualLeadDTO lead)
+      throws WrongDateFormatException, NoSuchLeadException {
     for (CRMClient<?> client : clients) {
       client.delete(lead);
     }
@@ -62,9 +69,7 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @Override
   @PostMapping("/add")
   @ResponseStatus(HttpStatus.CREATED)
-  public void addLead(@RequestBody VirtualLeadDTO lead) {
-    for (CRMClient<?> client : clients) {
-      client.add(lead);
-    }
+  public void addLead(@RequestBody VirtualLeadDTO lead) throws WrongDateFormatException {
+    clients.get(1).add(lead); // Ajout uniquement au client InternalClient
   }
 }
