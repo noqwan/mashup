@@ -1,9 +1,10 @@
 package org.virtual.service.crm;
 
+import java.util.Calendar;
+import java.util.List;
 import org.virtual.dto.SaleForceLeadDTO;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.dto.converter.SaleForceDtoConverter;
-import java.util.List;
 
 public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
@@ -12,12 +13,14 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
   }
 
   @Override
-  protected List<SaleForceLeadDTO> findLeadsSpecific() {
+  protected List<SaleForceLeadDTO> findLeadsSpecific(double lowAnnualRevenue,
+      double highAnnualRevenue,
+      String state) {
     return List.of();
   }
 
   @Override
-  protected List<SaleForceLeadDTO> findLeadsByDateSpecific() {
+  protected List<SaleForceLeadDTO> findLeadsByDateSpecific(Calendar startDate, Calendar endDate) {
     return List.of();
   }
 
