@@ -43,6 +43,31 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
   protected List<SaleForceLeadDTO> findLeadsSpecific() {
     List<SaleForceLeadDTO> result = new ArrayList<>();
 
+    postForAuthorizationToken();
+
+    String query="SELECT+Id,+FirstName,+LastName,+AnnualRevenue,+Phone,+CreatedDate,+Company,+State,+Street,+PostalCode,+City,+Country,+Address+FROM+Lead";
+
+
+    var objectMapper = new ObjectMapper();
+
+
+    try{
+      HttpClient client = HttpClient.newHttpClient();
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(URI.create(uri+"/services/data/v45.0/query/?q="+query))
+          .headers("Authorization","Bearer "+authorizationToken)
+          .build();
+
+      HttpResponse<String> response = client.send(request,
+          HttpResponse.BodyHandlers.ofString());
+
+      System.out.println(response.body());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+
 
 
     return result;
@@ -97,6 +122,9 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
           HttpResponse.BodyHandlers.ofString());
 
       System.out.println(response.body());
+      ObjectMapper mapper = new ObjectMapper();
+      HashMap<String,String> responseHaspMap= mapper.readValue(response.body(),HashMap.class);
+      authorizationToken=responseHaspMap.get("access_token");
     } catch (IOException e) {
       throw new RuntimeException(e);
     } catch (InterruptedException e) {
