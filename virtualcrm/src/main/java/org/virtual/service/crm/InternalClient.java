@@ -9,6 +9,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.virtual.dto.InternalLeadDtoWrapper;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.dto.converter.InternalDtoConverter;
 import org.virtual.service.exceptions.NoSuchLeadException;
@@ -24,7 +25,7 @@ import org.virtual.thrift.ThriftWrongOrderForDate;
 import org.virtual.thrift.ThriftWrongOrderForRevenue;
 import org.virtual.thrift.ThriftWrongState;
 
-public class InternalClient extends CRMClient<InternalLeadDto> {
+public class InternalClient extends CRMClient<InternalLeadDtoWrapper> {
 
   public InternalClient() {
     this.converter = new InternalDtoConverter();
@@ -33,7 +34,7 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
   private static InternalService.Client getClient() {
     try {
       TTransport transport = new THttpClient(
-          "http://localhost/internalcrm/");
+          "http://localhost:8080/internalcrm/");
       TProtocol protocol = new TBinaryProtocol(transport);
       return new InternalService.Client(protocol);
     } catch (TTransportException e) {
@@ -42,7 +43,7 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
   }
 
   @Override
-  protected List<InternalLeadDto> findLeadsSpecific(double lowAnnualRevenue,
+  protected List<InternalLeadDtoWrapper> findLeadsSpecific(double lowAnnualRevenue,
       double highAnnualRevenue,
       String state) throws WrongOrderForRevenue, WrongState {
 
@@ -56,7 +57,13 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
     }
 
     try {
-      return client.findLeads(lowAnnualRevenue, highAnnualRevenue, state);
+      List<InternalLeadDto> thritInternalLeads = client.findLeads(lowAnnualRevenue,
+          highAnnualRevenue, state);
+
+      return thritInternalLeads.stream()
+          .map(l -> new InternalLeadDtoWrapper(l))
+          .toList();
+
     } catch (ThriftWrongOrderForRevenue e) {
       throw new WrongOrderForRevenue(e);
     } catch (ThriftWrongState e) {
@@ -69,12 +76,13 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
   }
 
   @Override
-  protected List<InternalLeadDto> findLeadsByDateSpecific(Calendar startDate, Calendar endDate)
+  protected List<InternalLeadDtoWrapper> findLeadsByDateSpecific(Calendar startDate,
+      Calendar endDate)
       throws WrongOrderForDate {
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-    String StringStartDate = sdf.format(startDate);
-    String StringEndDate = sdf.format(endDate);
+    String StringStartDate = sdf.format(startDate.getTime());
+    String StringEndDate = sdf.format(endDate.getTime());
 
     InternalService.Client client = getClient();
     TTransport transport = client.getInputProtocol().getTransport();
@@ -86,7 +94,13 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
     }
 
     try {
-      return client.findLeadsByDate(StringStartDate, StringEndDate);
+      List<InternalLeadDto> thritInternalLeads = client.findLeadsByDate(StringStartDate,
+          StringEndDate);
+
+      return thritInternalLeads.stream()
+          .map(l -> new InternalLeadDtoWrapper(l))
+          .toList();
+
     } catch (ThriftWrongOrderForDate e) {
       throw new WrongOrderForDate(e);
     } catch (TException e) {
@@ -97,7 +111,7 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
   }
 
   @Override
-  protected void addSpecific(InternalLeadDto lead) throws WrongDateFormatException {
+  protected void addSpecific(InternalLeadDtoWrapper lead) throws WrongDateFormatException {
     InternalService.Client client = getClient();
     TTransport transport = client.getInputProtocol().getTransport();
 
@@ -108,7 +122,10 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
     }
 
     try {
-      client.addLead(lead);
+
+      InternalLeadDto internalLead = lead.getInternalLeadDto();
+      client.addLead(internalLead);
+
     } catch (ThriftWrongDateFormat e) {
       throw new WrongDateFormatException(e);
     } catch (TException e) {
@@ -119,7 +136,7 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
   }
 
   @Override
-  protected void deleteSpecific(InternalLeadDto lead)
+  protected void deleteSpecific(InternalLeadDtoWrapper lead)
       throws WrongDateFormatException, NoSuchLeadException {
     InternalService.Client client = getClient();
     TTransport transport = client.getInputProtocol().getTransport();
@@ -131,7 +148,10 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
     }
 
     try {
-      client.addLead(lead);
+
+      InternalLeadDto internalLead = lead.getInternalLeadDto();
+      client.deleteLead(internalLead);
+
     } catch (ThriftWrongDateFormat e) {
       throw new WrongDateFormatException(e);
     } catch (ThriftNoSuchLead e) {
@@ -144,12 +164,12 @@ public class InternalClient extends CRMClient<InternalLeadDto> {
   }
 
   @Override
-  protected VirtualLeadDTO convertToVirtual(InternalLeadDto specificLead) {
+  protected VirtualLeadDTO convertToVirtual(InternalLeadDtoWrapper specificLead) {
     return this.converter.convertToVirtual(specificLead);
   }
 
   @Override
-  protected InternalLeadDto convertFromVirtual(VirtualLeadDTO virtualLead) {
+  protected InternalLeadDtoWrapper convertFromVirtual(VirtualLeadDTO virtualLead) {
     return this.converter.convertFromVirtual(virtualLead);
   }
 }

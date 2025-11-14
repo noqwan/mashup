@@ -18,6 +18,9 @@ public class VirtualLeadDTO {
   private String country;
   private PositionDTO pos;
 
+  // Empty constructor for Jackson serialization
+  public VirtualLeadDTO() {}
+
   public VirtualLeadDTO(
       String id, String firstName, String lastName, double annualRevenue, String phone,
       Date creationDate, String company, String state, String street, String postalCode,
@@ -115,5 +118,24 @@ public class VirtualLeadDTO {
 
   public void setPos(PositionDTO pos) {
     this.pos = pos;
+  }
+
+  @Override
+  public String toString() {
+    return "VirtualLeadDTO{" +
+            "id='" + id + '\'' +
+            ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", annualRevenue=" + annualRevenue +
+            ", phone='" + phone + '\'' +
+            ", creationDate=" + creationDate +
+            ", company='" + company + '\'' +
+            ", state='" + state + '\'' +
+            ", street='" + street + '\'' +
+            ", postalCode='" + postalCode + '\'' +
+            ", city='" + city + '\'' +
+            ", country='" + country + '\'' +
+            ", pos=" + pos +
+            '}';
   }
 }

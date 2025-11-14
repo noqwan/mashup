@@ -18,9 +18,8 @@ public class Lead {
 
   private String country;
 
-  public Lead() {
-
-  }
+  // Empty constructor for serialisation
+  public Lead() {}
 
   public Lead(int id, String lastNamefirstName, double annualRevenue, String phone,
       Calendar creationDate, String company, String state, String street, String postalCode,
@@ -138,5 +137,22 @@ public class Lead {
   @Override
   public int hashCode() {
     return Objects.hashCode(id);
+  }
+
+  @Override
+  public String toString() {
+    return "Lead{" +
+            "id=" + id +
+            ", lastNamefirstName='" + lastNamefirstName + '\'' +
+            ", annualRevenue=" + annualRevenue +
+            ", phone='" + phone + '\'' +
+            ", creationDate=" + creationDate +
+            ", company='" + company + '\'' +
+            ", state='" + state + '\'' +
+            ", street='" + street + '\'' +
+            ", postalCode='" + postalCode + '\'' +
+            ", city='" + city + '\'' +
+            ", country='" + country + '\'' +
+            '}';
   }
 }

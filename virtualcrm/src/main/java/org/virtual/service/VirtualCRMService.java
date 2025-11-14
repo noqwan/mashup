@@ -1,6 +1,5 @@
 package org.virtual.service;
 
-import java.util.Calendar;
 import java.util.List;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.service.exceptions.NoSuchLeadException;
@@ -14,8 +13,8 @@ public interface VirtualCRMService {
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
       String state) throws WrongOrderForRevenue, WrongState;
 
-  public List<VirtualLeadDTO> findLeadsByDate(Calendar startDate, Calendar endDate)
-      throws WrongOrderForDate;
+  public List<VirtualLeadDTO> findLeadsByDate(String startDate, String endDate)
+      throws WrongOrderForDate, WrongDateFormatException;
 
   public void deleteLead(VirtualLeadDTO lead) throws WrongDateFormatException, NoSuchLeadException;
 

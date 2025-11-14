@@ -2,6 +2,7 @@ package org.virtual.service.crm;
 
 import java.util.Calendar;
 import java.util.List;
+import org.virtual.dto.ConvertibleDTO;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.dto.converter.DtoConverter;
 import org.virtual.service.exceptions.NoSuchLeadException;
@@ -10,14 +11,16 @@ import org.virtual.service.exceptions.WrongOrderForDate;
 import org.virtual.service.exceptions.WrongOrderForRevenue;
 import org.virtual.service.exceptions.WrongState;
 
-public abstract class CRMClient<T> {
+public abstract class CRMClient<T extends ConvertibleDTO> {
 
   protected DtoConverter<T> converter;
 
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
       String state) throws WrongOrderForRevenue, WrongState {
+
     List<T> specificList = findLeadsSpecific(lowAnnualRevenue, highAnnualRevenue,
         state);
+
     return specificList.stream()
         .map(this::convertToVirtual)
         .toList();
