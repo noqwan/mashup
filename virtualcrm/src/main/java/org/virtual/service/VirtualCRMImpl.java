@@ -35,24 +35,30 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @ResponseStatus(HttpStatus.OK)
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
       String state) throws WrongOrderForRevenue, WrongState {
+
     List<VirtualLeadDTO> result = new ArrayList<>();
     for (CRMClient<?> client : clients) {
       result.addAll(client.findLeads(lowAnnualRevenue, highAnnualRevenue, state));
     }
-    // Ici tu peux filtrer selon lowAnnualRevenue, highAnnualRevenue et state si besoin
+
     return result;
   }
 
   @Override
   @GetMapping("/findLeadsByDate")
   @ResponseStatus(HttpStatus.OK)
-  public List<VirtualLeadDTO> findLeadsByDate(Calendar startDate, Calendar endDate)
-      throws WrongOrderForDate {
+  public List<VirtualLeadDTO> findLeadsByDate(String startDate,
+      String endDate)
+      throws WrongOrderForDate, WrongDateFormatException {
+
+    Calendar calStart = ConverterUtils.toCalendarFromString(startDate);
+    Calendar calEnd = ConverterUtils.toCalendarFromString(endDate);
+
     List<VirtualLeadDTO> result = new ArrayList<>();
     for (CRMClient<?> client : clients) {
-      result.addAll(client.findLeadsByDate(startDate, endDate));
+      result.addAll(client.findLeadsByDate(calStart, calEnd));
     }
-    // Ici tu peux filtrer selon startDate / endDate si nécessaire
+
     return result;
   }
 
@@ -70,6 +76,8 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @PostMapping("/add")
   @ResponseStatus(HttpStatus.CREATED)
   public void addLead(@RequestBody VirtualLeadDTO lead) throws WrongDateFormatException {
-    clients.get(1).add(lead); // Ajout uniquement au client InternalClient
+    // Ajout uniquement au client de InternalCRM
+    clients.get(1).add(lead);
   }
+
 }

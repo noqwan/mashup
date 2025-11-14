@@ -23,19 +23,23 @@ public class LeadModelImpl implements LeadModel {
   @Override
   public List<Lead> findLeads(double lowAnnualRevenue, double highAnnualRevenue, String state)
       throws WrongOrderForRevenueException {
+
     if (lowAnnualRevenue > highAnnualRevenue) {
       throw new WrongOrderForRevenueException(
           "Low annual revenue must be less than or equal to high annual revenue");
     }
+
     if (state == null || Arrays.stream(StateEnum.values())
         .noneMatch(s -> s.getState().equals(state))) {
       throw new WrongStateException("State must be one of the following :"
           + Arrays.toString(Arrays.stream(StateEnum.values()).map(StateEnum::getState).toArray()));
     }
 
-    return leads.stream().filter(l -> l.getAnnualRevenue() >= lowAnnualRevenue
+    List<Lead> res = leads.stream().filter(l -> l.getAnnualRevenue() >= lowAnnualRevenue
             && l.getAnnualRevenue() <= highAnnualRevenue && l.getState().equals(state))
         .toList();
+    
+    return res;
   }
 
   @Override

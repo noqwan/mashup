@@ -3,6 +3,7 @@ package org.internal.service;
 import java.util.Calendar;
 import java.util.List;
 import org.apache.thrift.TException;
+import org.internal.model.Lead;
 import org.internal.model.LeadModelFactory;
 import org.internal.model.exception.NoSuchLeadException;
 import org.internal.model.exception.WrongDateFormatException;
@@ -25,9 +26,20 @@ public class InternalServiceImpl implements InternalService.Iface {
     List<InternalLeadDto> ret;
 
     try {
-      ret = LeadModelFactory.getLeadModel()
-          .findLeads(lowAnnualRevenue, highAnnualRevenue, state).stream()
-          .map(ConverterUtils::convertLeadToLeadDto).toList();
+
+      List<Lead> leads = LeadModelFactory.getLeadModel()
+              .findLeads(lowAnnualRevenue, highAnnualRevenue, state);
+
+      ret = leads.stream().map(lead -> {
+        try {
+          return ConverterUtils.convertLeadToLeadDto(lead);
+        } catch (IllegalArgumentException | NullPointerException e) {
+          e.printStackTrace();
+          throw new RuntimeException("Error converting Lead to DTO: " + lead, e);
+        }
+      }).toList();
+
+
     } catch (WrongOrderForRevenueException e) {
       throw new ThriftWrongOrderForRevenue(e.getMessage());
     } catch (WrongStateException e) {
