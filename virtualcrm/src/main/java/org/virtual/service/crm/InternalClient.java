@@ -80,7 +80,7 @@ public class InternalClient extends CRMClient<InternalLeadDtoWrapper> {
       Calendar endDate)
       throws WrongOrderForDate {
 
-    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     String StringStartDate = sdf.format(startDate.getTime());
     String StringEndDate = sdf.format(endDate.getTime());
 

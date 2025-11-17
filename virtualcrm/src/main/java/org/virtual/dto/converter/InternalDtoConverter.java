@@ -16,14 +16,12 @@ public class InternalDtoConverter implements DtoConverter<InternalLeadDtoWrapper
     try {
       String firstName = dto.getLastNamefirstName().split(",")[1].strip();
       String lastName = dto.getLastNamefirstName().split(",")[0].strip();
-      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
       Date date = sdf.parse(dto.getCreationDate());
-
       VirtualLeadDTO virtualDto = new VirtualLeadDTO("I" + dto.getId(), firstName, lastName,
           dto.getAnnualRevenue(),
           dto.getPhone(), date, dto.getCompany(), dto.getState(), dto.getStreet(),
           dto.getPostalCode(), dto.getCity(), dto.getCountry());
-      
       return virtualDto;
     } catch (Exception e) {
       e.printStackTrace();
@@ -34,7 +32,7 @@ public class InternalDtoConverter implements DtoConverter<InternalLeadDtoWrapper
   @Override
   public InternalLeadDtoWrapper convertFromVirtual(VirtualLeadDTO dto) {
 
-    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     String creationDate = sdf.format(dto.getCreationDate());
 
     InternalLeadDto ret = new InternalLeadDto();

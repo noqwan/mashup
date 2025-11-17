@@ -21,14 +21,14 @@ public class InternalServiceImpl implements InternalService.Iface {
 
   @Override
   public List<InternalLeadDto> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
-      String state) throws ThriftWrongOrderForRevenue, ThriftWrongState, TException {
+      String state) throws TException {
 
     List<InternalLeadDto> ret;
 
     try {
 
       List<Lead> leads = LeadModelFactory.getLeadModel()
-              .findLeads(lowAnnualRevenue, highAnnualRevenue, state);
+          .findLeads(lowAnnualRevenue, highAnnualRevenue, state);
 
       ret = leads.stream().map(lead -> {
         try {
@@ -41,10 +41,13 @@ public class InternalServiceImpl implements InternalService.Iface {
 
 
     } catch (WrongOrderForRevenueException e) {
+      e.printStackTrace();
       throw new ThriftWrongOrderForRevenue(e.getMessage());
     } catch (WrongStateException e) {
+      e.printStackTrace();
       throw new ThriftWrongState(e.getMessage());
     } catch (Exception e) {
+      e.printStackTrace();
       throw new TException(e);
     }
 
@@ -53,7 +56,7 @@ public class InternalServiceImpl implements InternalService.Iface {
 
   @Override
   public List<InternalLeadDto> findLeadsByDate(String startDate, String endDate)
-      throws ThriftWrongOrderForDate, TException {
+      throws TException {
     List<InternalLeadDto> ret;
 
     try {
@@ -63,10 +66,13 @@ public class InternalServiceImpl implements InternalService.Iface {
       ret = LeadModelFactory.getLeadModel().findLeadsByDate(calStart, calEnd).stream()
           .map(ConverterUtils::convertLeadToLeadDto).toList();
     } catch (WrongOrderForDateException e) {
+      e.printStackTrace();
       throw new ThriftWrongOrderForDate(e.getMessage());
     } catch (WrongStateException e) {
+      e.printStackTrace();
       throw new WrongDateFormatException(e.getMessage());
     } catch (Exception e) {
+      e.printStackTrace();
       throw new TException(e);
     }
     return ret;
@@ -76,18 +82,24 @@ public class InternalServiceImpl implements InternalService.Iface {
   public void addLead(InternalLeadDto lead) throws TException {
     try {
       LeadModelFactory.getLeadModel().addLead(ConverterUtils.convertLeadDtoToLead(lead));
+    } catch (WrongDateFormatException e) {
+      e.printStackTrace();
+      throw new ThriftWrongOrderForDate();
     } catch (Exception e) {
+      e.printStackTrace();
       throw new TException(e);
     }
   }
 
   @Override
-  public void deleteLead(InternalLeadDto lead) throws ThriftNoSuchLead, TException {
+  public void deleteLead(InternalLeadDto lead) throws TException {
     try {
       LeadModelFactory.getLeadModel().removeLead(ConverterUtils.convertLeadDtoToLead(lead));
     } catch (NoSuchLeadException e) {
+      e.printStackTrace();
       throw new ThriftNoSuchLead(e.getMessage());
     } catch (Exception e) {
+      e.printStackTrace();
       throw new TException(e);
     }
   }
