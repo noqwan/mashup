@@ -1,16 +1,7 @@
 package org.virtual.service.crm;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.Calendar;
+import java.util.List;
 import org.virtual.dto.SaleForceLeadDTO;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.dto.converter.SaleForceDtoConverter;
@@ -40,7 +31,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
   }
 
   @Override
-  protected List<SaleForceLeadDTO> findLeadsSpecific() {
+  protected List<SaleForceLeadDTO> findLeadsSpecific(double lowAnnualRevenue, double highAnnualRevenue,String state) {
     List<SaleForceLeadDTO> result = new ArrayList<>();
 
     postForAuthorizationToken();
@@ -74,7 +65,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
   }
 
   @Override
-  protected List<SaleForceLeadDTO> findLeadsByDateSpecific() {
+  protected List<SaleForceLeadDTO> findLeadsByDateSpecific(Calendar startDate, Calendar endDate) {
     return List.of();
   }
 

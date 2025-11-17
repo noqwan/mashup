@@ -26,9 +26,8 @@ public class ConverterUtils {
   }
 
   public static InternalLeadDto convertLeadToLeadDto(Lead lead) {
-    String formattedDate = toStringFromCalendar(lead.getCreationDate());
 
-    return new InternalLeadDto(
+    InternalLeadDto dto = new InternalLeadDto(
         lead.getId(),
         lead.getLastNamefirstName(),
         lead.getAnnualRevenue(),
@@ -41,6 +40,8 @@ public class ConverterUtils {
         lead.getCity(),
         lead.getCountry()
     );
+
+    return dto;
   }
 
   public static Calendar toCalendarFromString(String string) throws WrongDateFormatException {
@@ -58,7 +59,7 @@ public class ConverterUtils {
   public static String toStringFromCalendar(Calendar calendar) {
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-    return sdf.format(calendar);
+    return sdf.format(calendar.getTime());
   }
 
 

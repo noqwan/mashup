@@ -1,19 +1,24 @@
 package org.virtual.service;
 
-import org.virtual.dto.VirtualLeadDTO;
-import java.util.Calendar;
 import java.util.List;
+import org.virtual.dto.VirtualLeadDTO;
+import org.virtual.service.exceptions.NoSuchLeadException;
+import org.virtual.service.exceptions.WrongDateFormatException;
+import org.virtual.service.exceptions.WrongOrderForDate;
+import org.virtual.service.exceptions.WrongOrderForRevenue;
+import org.virtual.service.exceptions.WrongState;
 
 public interface VirtualCRMService {
 
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
-      String state);
+      String state) throws WrongOrderForRevenue, WrongState;
 
-  public List<VirtualLeadDTO> findLeadsByDate(Calendar startDate, Calendar endDate);
+  public List<VirtualLeadDTO> findLeadsByDate(String startDate, String endDate)
+      throws WrongOrderForDate, WrongDateFormatException;
 
-  public void deleteLead(VirtualLeadDTO lead);
+  public void deleteLead(VirtualLeadDTO lead) throws WrongDateFormatException, NoSuchLeadException;
 
-  public void addLead(VirtualLeadDTO lead);
+  public void addLead(VirtualLeadDTO lead) throws WrongDateFormatException;
 
 }
 
