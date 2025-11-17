@@ -35,11 +35,6 @@ exception ThriftNoSuchLead
     1: string message
 }
 
-exception ThriftWrongState
-{
-    1: string message
-}
-
 exception ThriftWrongDateFormat
 {
     1: string message
@@ -52,8 +47,7 @@ service InternalService
   list<InternalLeadDto> findLeads(1:double lowAnnualRevenue
                                   2:double highAnnualRevenue
                                   3:string state)
-                                  throws(1: ThriftWrongOrderForRevenue e
-                                         2: ThriftWrongState ee)
+                                  throws(1: ThriftWrongOrderForRevenue e)
   list<InternalLeadDto> findLeadsByDate(1: string startDate
                                         2: string endDate)
                                         throws(1: ThriftWrongOrderForDate e)

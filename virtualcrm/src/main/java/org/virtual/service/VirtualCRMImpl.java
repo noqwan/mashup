@@ -18,7 +18,6 @@ import org.virtual.service.exceptions.NoSuchLeadException;
 import org.virtual.service.exceptions.WrongDateFormatException;
 import org.virtual.service.exceptions.WrongOrderForDate;
 import org.virtual.service.exceptions.WrongOrderForRevenue;
-import org.virtual.service.exceptions.WrongState;
 
 @RestController
 public class VirtualCRMImpl implements VirtualCRMService {
@@ -34,7 +33,7 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @GetMapping("/findLeads")
   @ResponseStatus(HttpStatus.OK)
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
-      String state) throws WrongOrderForRevenue, WrongState {
+      String state) throws WrongOrderForRevenue {
 
     List<VirtualLeadDTO> result = new ArrayList<>();
     for (CRMClient<?> client : clients) {

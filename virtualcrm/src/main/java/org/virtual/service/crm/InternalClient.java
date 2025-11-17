@@ -16,14 +16,12 @@ import org.virtual.service.exceptions.NoSuchLeadException;
 import org.virtual.service.exceptions.WrongDateFormatException;
 import org.virtual.service.exceptions.WrongOrderForDate;
 import org.virtual.service.exceptions.WrongOrderForRevenue;
-import org.virtual.service.exceptions.WrongState;
 import org.virtual.thrift.InternalLeadDto;
 import org.virtual.thrift.InternalService;
 import org.virtual.thrift.ThriftNoSuchLead;
 import org.virtual.thrift.ThriftWrongDateFormat;
 import org.virtual.thrift.ThriftWrongOrderForDate;
 import org.virtual.thrift.ThriftWrongOrderForRevenue;
-import org.virtual.thrift.ThriftWrongState;
 
 public class InternalClient extends CRMClient<InternalLeadDtoWrapper> {
 
@@ -45,7 +43,7 @@ public class InternalClient extends CRMClient<InternalLeadDtoWrapper> {
   @Override
   protected List<InternalLeadDtoWrapper> findLeadsSpecific(double lowAnnualRevenue,
       double highAnnualRevenue,
-      String state) throws WrongOrderForRevenue, WrongState {
+      String state) throws WrongOrderForRevenue {
 
     InternalService.Client client = getClient();
     TTransport transport = client.getInputProtocol().getTransport();
@@ -66,8 +64,6 @@ public class InternalClient extends CRMClient<InternalLeadDtoWrapper> {
 
     } catch (ThriftWrongOrderForRevenue e) {
       throw new WrongOrderForRevenue(e);
-    } catch (ThriftWrongState e) {
-      throw new WrongState(e);
     } catch (TException e) {
       throw new RuntimeException(e);
     } finally {

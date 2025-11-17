@@ -1,14 +1,11 @@
 package org.internal.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import org.internal.model.exception.NoSuchLeadException;
 import org.internal.model.exception.WrongOrderForDateException;
 import org.internal.model.exception.WrongOrderForRevenueException;
-import org.internal.model.exception.WrongStateException;
-import org.internal.model.utils.StateEnum;
 
 public class LeadModelImpl implements LeadModel {
 
@@ -29,16 +26,10 @@ public class LeadModelImpl implements LeadModel {
           "Low annual revenue must be less than or equal to high annual revenue");
     }
 
-    if (state == null || Arrays.stream(StateEnum.values())
-        .noneMatch(s -> s.getState().equals(state))) {
-      throw new WrongStateException("State must be one of the following :"
-          + Arrays.toString(Arrays.stream(StateEnum.values()).map(StateEnum::getState).toArray()));
-    }
-
     List<Lead> res = leads.stream().filter(l -> l.getAnnualRevenue() >= lowAnnualRevenue
             && l.getAnnualRevenue() <= highAnnualRevenue && l.getState().equals(state))
         .toList();
-    
+
     return res;
   }
 
