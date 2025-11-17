@@ -67,8 +67,12 @@ public class VirtualCRMImpl implements VirtualCRMService {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteLead(@RequestBody VirtualLeadDTO lead)
       throws WrongDateFormatException, NoSuchLeadException {
-    for (CRMClient<?> client : clients) {
-      client.delete(lead);
+    if (lead.getId().startsWith("I")) {
+      lead.setId(lead.getId().substring(1));
+      clients.get(1).delete(lead);
+    } else if (lead.getId().startsWith("S")) {
+      lead.setId(lead.getId().substring(1));
+      clients.get(0).delete(lead);
     }
   }
 
