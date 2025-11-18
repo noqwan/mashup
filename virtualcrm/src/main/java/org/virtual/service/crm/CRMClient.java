@@ -9,14 +9,13 @@ import org.virtual.service.exceptions.NoSuchLeadException;
 import org.virtual.service.exceptions.WrongDateFormatException;
 import org.virtual.service.exceptions.WrongOrderForDate;
 import org.virtual.service.exceptions.WrongOrderForRevenue;
-import org.virtual.service.exceptions.WrongState;
 
 public abstract class CRMClient<T extends ConvertibleDTO> {
 
   protected DtoConverter<T> converter;
 
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
-      String state) throws WrongOrderForRevenue, WrongState {
+      String state) throws WrongOrderForRevenue {
 
     List<T> specificList = findLeadsSpecific(lowAnnualRevenue, highAnnualRevenue,
         state);
@@ -46,7 +45,7 @@ public abstract class CRMClient<T extends ConvertibleDTO> {
   }
 
   protected abstract List<T> findLeadsSpecific(double lowAnnualRevenue, double highAnnualRevenue,
-      String state) throws WrongOrderForRevenue, WrongState;
+      String state) throws WrongOrderForRevenue;
 
   protected abstract List<T> findLeadsByDateSpecific(Calendar startDate, Calendar endDate)
       throws WrongOrderForDate;

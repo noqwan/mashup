@@ -9,13 +9,11 @@ import org.internal.model.exception.NoSuchLeadException;
 import org.internal.model.exception.WrongDateFormatException;
 import org.internal.model.exception.WrongOrderForDateException;
 import org.internal.model.exception.WrongOrderForRevenueException;
-import org.internal.model.exception.WrongStateException;
 import org.internal.thrift.InternalLeadDto;
 import org.internal.thrift.InternalService;
 import org.internal.thrift.ThriftNoSuchLead;
 import org.internal.thrift.ThriftWrongOrderForDate;
 import org.internal.thrift.ThriftWrongOrderForRevenue;
-import org.internal.thrift.ThriftWrongState;
 
 public class InternalServiceImpl implements InternalService.Iface {
 
@@ -24,9 +22,7 @@ public class InternalServiceImpl implements InternalService.Iface {
       String state) throws TException {
 
     List<InternalLeadDto> ret;
-
     try {
-
       List<Lead> leads = LeadModelFactory.getLeadModel()
           .findLeads(lowAnnualRevenue, highAnnualRevenue, state);
 
@@ -38,14 +34,9 @@ public class InternalServiceImpl implements InternalService.Iface {
           throw new RuntimeException("Error converting Lead to DTO: " + lead, e);
         }
       }).toList();
-
-
     } catch (WrongOrderForRevenueException e) {
       e.printStackTrace();
       throw new ThriftWrongOrderForRevenue(e.getMessage());
-    } catch (WrongStateException e) {
-      e.printStackTrace();
-      throw new ThriftWrongState(e.getMessage());
     } catch (Exception e) {
       e.printStackTrace();
       throw new TException(e);
@@ -68,9 +59,6 @@ public class InternalServiceImpl implements InternalService.Iface {
     } catch (WrongOrderForDateException e) {
       e.printStackTrace();
       throw new ThriftWrongOrderForDate(e.getMessage());
-    } catch (WrongStateException e) {
-      e.printStackTrace();
-      throw new WrongDateFormatException(e.getMessage());
     } catch (Exception e) {
       e.printStackTrace();
       throw new TException(e);

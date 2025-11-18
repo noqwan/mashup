@@ -6,12 +6,11 @@ import org.virtual.service.exceptions.NoSuchLeadException;
 import org.virtual.service.exceptions.WrongDateFormatException;
 import org.virtual.service.exceptions.WrongOrderForDate;
 import org.virtual.service.exceptions.WrongOrderForRevenue;
-import org.virtual.service.exceptions.WrongState;
 
 public interface VirtualCRMService {
 
   public List<VirtualLeadDTO> findLeads(double lowAnnualRevenue, double highAnnualRevenue,
-      String state) throws WrongOrderForRevenue, WrongState;
+      String state) throws WrongOrderForRevenue;
 
   public List<VirtualLeadDTO> findLeadsByDate(String startDate, String endDate)
       throws WrongOrderForDate, WrongDateFormatException;
