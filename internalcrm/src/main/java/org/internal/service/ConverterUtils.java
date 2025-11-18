@@ -46,7 +46,7 @@ public class ConverterUtils {
 
   public static Calendar toCalendarFromString(String string) throws WrongDateFormatException {
     try {
-      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
       Date date = sdf.parse(string); // Parse string to Date
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(date);
@@ -58,7 +58,7 @@ public class ConverterUtils {
 
   public static String toStringFromCalendar(Calendar calendar) {
 
-    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     return sdf.format(calendar.getTime());
   }
 
