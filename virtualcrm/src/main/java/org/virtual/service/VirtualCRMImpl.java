@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,10 +80,11 @@ public class VirtualCRMImpl implements VirtualCRMService {
   }
 
   @Override
-  @DeleteMapping("/delete")
+  @PostMapping("/delete")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteLead(@RequestBody VirtualLeadDTO lead)
       throws WrongDateFormatException, NoSuchLeadException {
+
     if (lead.getId().startsWith("I")) {
       lead.setId(lead.getId().substring(1));
       clients.get(1).delete(lead);
