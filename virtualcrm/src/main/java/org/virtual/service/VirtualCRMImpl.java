@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.virtual.dto.PositionDTO;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.service.crm.CRMClient;
 import org.virtual.service.crm.InternalClient;
@@ -18,11 +19,15 @@ import org.virtual.service.exceptions.NoSuchLeadException;
 import org.virtual.service.exceptions.WrongDateFormatException;
 import org.virtual.service.exceptions.WrongOrderForDate;
 import org.virtual.service.exceptions.WrongOrderForRevenue;
+import org.virtual.service.positionClient.PositionClient;
+import org.virtual.service.positionClient.PositionClientImpl;
 
 @RestController
 public class VirtualCRMImpl implements VirtualCRMService {
 
   private final List<CRMClient<?>> clients = new ArrayList<>();
+
+  private final PositionClient positionClient = new PositionClientImpl();
 
   public VirtualCRMImpl() {
     clients.add(new SalesForceClient());
@@ -38,6 +43,13 @@ public class VirtualCRMImpl implements VirtualCRMService {
     List<VirtualLeadDTO> result = new ArrayList<>();
     for (CRMClient<?> client : clients) {
       result.addAll(client.findLeads(lowAnnualRevenue, highAnnualRevenue, state));
+    }
+
+    for (VirtualLeadDTO dto : result) {
+      PositionDTO pos = positionClient.getPositionDTO(dto.getStreet(), dto.getPostalCode(),
+          dto.getCity(),
+          dto.getCountry());
+      dto.setPos(pos);
     }
 
     return result;
@@ -56,6 +68,13 @@ public class VirtualCRMImpl implements VirtualCRMService {
     List<VirtualLeadDTO> result = new ArrayList<>();
     for (CRMClient<?> client : clients) {
       result.addAll(client.findLeadsByDate(calStart, calEnd));
+    }
+
+    for (VirtualLeadDTO dto : result) {
+      PositionDTO pos = positionClient.getPositionDTO(dto.getStreet(), dto.getPostalCode(),
+          dto.getCity(),
+          dto.getCountry());
+      dto.setPos(pos);
     }
 
     return result;
