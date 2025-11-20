@@ -4,5 +4,5 @@ import org.virtual.dto.PositionDTO;
 
 public interface PositionClient {
 
-    PositionDTO getPositionDTO(String street, String postalCode, String city, String country);
+  PositionDTO getPositionDTO(String street, String postalCode, String city, String country);
 }

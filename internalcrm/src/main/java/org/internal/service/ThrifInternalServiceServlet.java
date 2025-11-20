@@ -8,16 +8,16 @@ import org.internal.thrift.InternalService;
 public class ThrifInternalServiceServlet extends ThriftHttpServletTemplate {
 
 
-    public ThrifInternalServiceServlet() {
-        super(createProcessor(), createProtocolFactory());
-    }
+  public ThrifInternalServiceServlet() {
+    super(createProcessor(), createProtocolFactory());
+  }
 
-    private static TProcessor createProcessor() {
-        return new InternalService.Processor<InternalService.Iface>(new InternalServiceImpl());
-    }
+  private static TProcessor createProcessor() {
+    return new InternalService.Processor<InternalService.Iface>(new InternalServiceImpl());
+  }
 
-    private static TProtocolFactory createProtocolFactory() {
-        return new TBinaryProtocol.Factory();
-    }
+  private static TProtocolFactory createProtocolFactory() {
+    return new TBinaryProtocol.Factory();
+  }
 
 }

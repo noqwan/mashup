@@ -2,7 +2,6 @@ package org.virtual.dto.converter;
 
 import org.virtual.dto.SaleForceLeadDTO;
 import org.virtual.dto.VirtualLeadDTO;
-import org.virtual.dto.PositionDTO;
 
 public class SaleForceDtoConverter implements DtoConverter<SaleForceLeadDTO> {
 

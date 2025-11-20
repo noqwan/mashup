@@ -13,7 +13,8 @@ public class PositionDTO {
     this.lon = lon;
   }
 
-  public PositionDTO() {}
+  public PositionDTO() {
+  }
 
   public double getLat() {
     return lat;
