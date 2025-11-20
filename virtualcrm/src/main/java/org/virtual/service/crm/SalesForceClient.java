@@ -23,7 +23,6 @@ import org.virtual.dto.SaleForceLeadDTO;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.dto.converter.SaleForceDtoConverter;
 import java.io.FileInputStream;
-import org.virtual.service.exceptions.SalesForceLeadNotFoundException;
 import org.virtual.service.exceptions.SalesForcePropertiesException;
 import org.virtual.service.exceptions.SalesForceTokenObtentionException;
 
