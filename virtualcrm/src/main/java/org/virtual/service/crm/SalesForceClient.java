@@ -1,6 +1,6 @@
 package org.virtual.service.crm;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -10,8 +10,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -20,7 +23,9 @@ import org.virtual.dto.SaleForceLeadDTO;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.dto.converter.SaleForceDtoConverter;
 import java.io.FileInputStream;
+import org.virtual.service.exceptions.SalesForceLeadNotFoundException;
 import org.virtual.service.exceptions.SalesForcePropertiesException;
+import org.virtual.service.exceptions.SalesForceTokenObtentionException;
 
 public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
@@ -55,7 +60,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
 
     var mapper = new ObjectMapper();
-
+    HttpResponse<String> response;
 
     try{
       HttpClient client = HttpClient.newHttpClient();
@@ -64,17 +69,29 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
           .headers("Authorization","Bearer "+authorizationToken)
           .build();
 
-      HttpResponse<String> response = client.send(request,
+          response = client.send(request,
           HttpResponse.BodyHandlers.ofString());
 
       //System.out.println(response.body());
 
-      HashMap<String, String> responseHashMap = mapper.readValue(
-          response.body(),
-          new TypeReference<HashMap<String, String>>() {}
-      );
+
+
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
+    }
+    try {
+      JsonNode root = mapper.readTree(response.body());
+      if (!root.has("records") || root.get("records").isEmpty()) {
+        throw new SalesForceLeadNotFoundException(lowAnnualRevenue+" "+highAnnualRevenue);
+      }
+
+      for(JsonNode leadNode : root.get("records")){
+        result.add(nodeTOLead(leadNode));
+      }
+
+    }
+    catch(Exception e){
+      throw  new RuntimeException(e);
     }
 
     return result;
@@ -86,30 +103,41 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
     postForAuthorizationToken();
 
-    String query="SELECT+Id%2C+FirstName%2C+LastName%2C+AnnualRevenue%2C+Phone%2C+CreatedDate%2C+Company%2C+State%2C+Street%2C+PostalCode%2C+City%2C+Country%2C+Address+FROM+Lead+WHERE+CreatedDate+%3E%3D+"+startDate+"+AND+CreatedDate+%3C%3D+"+endDate;
-
+    String query =
+        "SELECT+Id%2C+FirstName%2C+LastName%2C+AnnualRevenue%2C+Phone%2C+CreatedDate%2C+Company%2C+State%2C+Street%2C+PostalCode%2C+City%2C+Country%2C+Address+FROM+Lead+WHERE+CreatedDate+%3E%3D+"
+            + startDate + "+AND+CreatedDate+%3C%3D+" + endDate;
 
     var mapper = new ObjectMapper();
 
-
-    try{
+    HttpResponse<String> response;
+    try {
       HttpClient client = HttpClient.newHttpClient();
       HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create(uri+"/services/data/v45.0/query/?q="+query))
-          .headers("Authorization","Bearer "+authorizationToken)
+          .uri(URI.create(uri + "/services/data/v45.0/query/?q=" + query))
+          .headers("Authorization", "Bearer " + authorizationToken)
           .build();
 
-      HttpResponse<String> response = client.send(request,
+      response = client.send(request,
           HttpResponse.BodyHandlers.ofString());
 
       //System.out.println(response.body());
 
-      HashMap<String, String> responseHashMap = mapper.readValue(
-          response.body(),
-          new TypeReference<HashMap<String, String>>() {}
-      );
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
+    }
+    try {
+      JsonNode root = mapper.readTree(response.body());
+      if (!root.has("records") || root.get("records").isEmpty()) {
+        throw new SalesForceLeadNotFoundException(startDate+" "+endDate);
+      }
+
+      for(JsonNode leadNode : root.get("records")){
+          result.add(nodeTOLead(leadNode));
+      }
+
+    }
+    catch(Exception e){
+      throw  new RuntimeException(e);
     }
 
     return result;
@@ -117,12 +145,11 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
   @Override
   protected void addSpecific(SaleForceLeadDTO lead) {
-    return;
+    //UNSUPPORTED
   }
 
   @Override
   protected void deleteSpecific(SaleForceLeadDTO lead) {
-    List<SaleForceLeadDTO> result = new ArrayList<>();
 
     postForAuthorizationToken();
 
@@ -148,7 +175,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
       JsonNode root = mapper.readTree(response.body());
 
       if (!root.has("records") || root.get("records").isEmpty()) {
-        throw new RuntimeException("Lead not found for " + lead.getFirstName() + " " + lead.getLastName());
+        throw new SalesForceLeadNotFoundException(lead.getLastName()+" "+lead.getFirstName());
       }
 
       String leadId = root.get("records").get(0).get("Id").asText();
@@ -194,7 +221,6 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
       put("password", salesForceProperties.getProperty("password"));
     }};
 
-    var objectMapper = new ObjectMapper();
 
 
     try{
@@ -217,13 +243,52 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
 
       ObjectMapper mapper = new ObjectMapper();
-      HashMap<String, String> responseHashMap = mapper.readValue(
-          response.body(),
-          new TypeReference<HashMap<String, String>>() {}
-      );
-      authorizationToken=responseHashMap.get("access_token");
+      JsonNode root = mapper.readTree(response.body());
+      if (!root.has("records") || root.get("records").isEmpty()) {
+        throw new SalesForceTokenObtentionException("Error while retrieving authorization token");
+      }
+      authorizationToken=root.get("records").get("access_token").asText();
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private SaleForceLeadDTO nodeTOLead(JsonNode node) {
+
+    String id = node.hasNonNull("Id") ? node.get("Id").asText() : "";
+    String firstName = node.hasNonNull("FirstName") ? node.get("FirstName").asText() : "";
+    String lastName = node.hasNonNull("LastName") ? node.get("LastName").asText() : "";
+    String phone = node.hasNonNull("Phone") ? node.get("Phone").asText() : "";
+    String company = node.hasNonNull("Company") ? node.get("Company").asText() : "";
+    String state = node.hasNonNull("State") ? node.get("State").asText() : "";
+    String street = node.hasNonNull("Street") ? node.get("Street").asText() : "";
+    String postalCode = node.hasNonNull("PostalCode") ? node.get("PostalCode").asText() : "";
+    String city = node.hasNonNull("City") ? node.get("City").asText() : "";
+    String country = node.hasNonNull("Country") ? node.get("Country").asText() : "";
+
+
+    double annualRevenue = 0.0;
+    if (node.hasNonNull("AnnualRevenue")) {
+      try {
+        annualRevenue = Double.parseDouble(node.get("AnnualRevenue").asText());
+      } catch (NumberFormatException e) {
+        annualRevenue = 0.0; // default if parsing fails
+      }
+    }
+
+
+    Date creationDate = null;
+    if (node.hasNonNull("CreatedDate")) {
+      try {
+        // Salesforce returns ISO 8601 date strings, e.g. "2025-11-20T14:33:00.000+0000"
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        creationDate = sdf.parse(node.get("CreatedDate").asText());
+      } catch (ParseException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    return new SaleForceLeadDTO(id, firstName, lastName, annualRevenue, phone,
+        creationDate, company, state, street, postalCode, city, country);
   }
 }
