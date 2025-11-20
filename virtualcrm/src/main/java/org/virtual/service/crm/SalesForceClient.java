@@ -1,5 +1,6 @@
 package org.virtual.service.crm;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -19,13 +20,13 @@ import org.virtual.dto.SaleForceLeadDTO;
 import org.virtual.dto.VirtualLeadDTO;
 import org.virtual.dto.converter.SaleForceDtoConverter;
 import java.io.FileInputStream;
-import java.util.List;
+import org.virtual.service.exceptions.SalesForcePropertiesException;
 
 public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
   private String authorizationToken;
-  private String uri;
-  private Properties salesForceProperties;
+  private final String uri;
+  private final Properties salesForceProperties;
   public SalesForceClient() {
     this.converter = new SaleForceDtoConverter();
     authorizationToken="";
@@ -40,7 +41,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
     uri="https://"+salesForceProperties.getProperty("salesforce_uri");
   }
   catch(IOException e){
-    e.printStackTrace();
+    throw new SalesForcePropertiesException(e.getMessage());
   }
   }
 
@@ -68,7 +69,10 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
       //System.out.println(response.body());
 
-      HashMap<String,String> responseHashMap= mapper.readValue(response.body(),HashMap.class);
+      HashMap<String, String> responseHashMap = mapper.readValue(
+          response.body(),
+          new TypeReference<HashMap<String, String>>() {}
+      );
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -100,7 +104,10 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
       //System.out.println(response.body());
 
-      HashMap<String, String> responseHashMap = mapper.readValue(response.body(), HashMap.class);
+      HashMap<String, String> responseHashMap = mapper.readValue(
+          response.body(),
+          new TypeReference<HashMap<String, String>>() {}
+      );
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -140,7 +147,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
       JsonNode root = mapper.readTree(response.body());
 
-      if (!root.has("records") || root.get("records").size() == 0) {
+      if (!root.has("records") || root.get("records").isEmpty()) {
         throw new RuntimeException("Lead not found for " + lead.getFirstName() + " " + lead.getLastName());
       }
 
@@ -210,11 +217,12 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
 
       ObjectMapper mapper = new ObjectMapper();
-      HashMap<String,String> responseHaspMap= mapper.readValue(response.body(),HashMap.class);
-      authorizationToken=responseHaspMap.get("access_token");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } catch (InterruptedException e) {
+      HashMap<String, String> responseHashMap = mapper.readValue(
+          response.body(),
+          new TypeReference<HashMap<String, String>>() {}
+      );
+      authorizationToken=responseHashMap.get("access_token");
+    } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
   }
