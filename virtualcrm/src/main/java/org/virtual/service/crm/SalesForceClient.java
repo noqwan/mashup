@@ -149,30 +149,14 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
     postForAuthorizationToken();
 
-    String query="SELECT+Id+FROM+Lead+WHERE+FirstName+%3D+"+lead.getFirstName()+"+AND+LastName+%3D+"+lead.getLastName()+"+AND+Phone+%3D+"+lead.getPhone()+"+AND+CreatedDate+%3D+"+lead.getCreationDate();
 
-
-    var mapper = new ObjectMapper();
 
 
     try{
       HttpClient client = HttpClient.newHttpClient();
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create(uri+"/services/data/v45.0/query/?q="+query))
-          .headers("Authorization","Bearer "+authorizationToken)
-          .build();
-
-      HttpResponse<String> response = client.send(request,
-          HttpResponse.BodyHandlers.ofString());
 
 
-      JsonNode root = mapper.readTree(response.body());
-
-      if (!root.has("records") || root.get("records").isEmpty()) {
-        return;
-      }
-
-      String leadId = root.get("records").get(0).get("Id").asText();
+      String leadId = lead.getId();
 
 
       String deleteUrl = uri+"/services/data/v45.0/sobjects/Lead/" + leadId;
