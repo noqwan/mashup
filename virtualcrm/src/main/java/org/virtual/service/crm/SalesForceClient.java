@@ -72,7 +72,6 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
           response = client.send(request,
           HttpResponse.BodyHandlers.ofString());
 
-      //System.out.println(response.body());
 
 
 
@@ -82,7 +81,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
     try {
       JsonNode root = mapper.readTree(response.body());
       if (!root.has("records") || root.get("records").isEmpty()) {
-        throw new SalesForceLeadNotFoundException(lowAnnualRevenue+" "+highAnnualRevenue);
+        return result;
       }
 
       for(JsonNode leadNode : root.get("records")){
@@ -120,15 +119,13 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
       response = client.send(request,
           HttpResponse.BodyHandlers.ofString());
 
-      //System.out.println(response.body());
-
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
     try {
       JsonNode root = mapper.readTree(response.body());
       if (!root.has("records") || root.get("records").isEmpty()) {
-        throw new SalesForceLeadNotFoundException(startDate+" "+endDate);
+        return result;
       }
 
       for(JsonNode leadNode : root.get("records")){
@@ -169,13 +166,11 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
       HttpResponse<String> response = client.send(request,
           HttpResponse.BodyHandlers.ofString());
 
-      //System.out.println(response.body());
-
 
       JsonNode root = mapper.readTree(response.body());
 
       if (!root.has("records") || root.get("records").isEmpty()) {
-        throw new SalesForceLeadNotFoundException(lead.getLastName()+" "+lead.getFirstName());
+        return;
       }
 
       String leadId = root.get("records").get(0).get("Id").asText();
@@ -244,10 +239,10 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
       ObjectMapper mapper = new ObjectMapper();
       JsonNode root = mapper.readTree(response.body());
-      if (!root.has("records") || root.get("records").isEmpty()) {
+      if (!root.has("access_token") || root.get("access_token").asText().isEmpty()) {
         throw new SalesForceTokenObtentionException("Error while retrieving authorization token");
       }
-      authorizationToken=root.get("records").get("access_token").asText();
+      authorizationToken=root.get("access_token").asText();
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
