@@ -31,6 +31,7 @@ farm {
 
 project.afterEvaluate {
     tasks.farmRun.dependsOn ':client:shadowJar'
+    tasks.farmRun.dependsOn ':leadMerger:shadowJar'
 }
 
 //tasks.farmRun.dependsOn

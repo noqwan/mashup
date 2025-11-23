@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/client" />
             <option value="$PROJECT_DIR$/internalcrm" />
+            <option value="$PROJECT_DIR$/leadMerger" />
             <option value="$PROJECT_DIR$/virtualcrm" />
           </set>
         </option>

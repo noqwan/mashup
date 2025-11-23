@@ -23,7 +23,7 @@ dependencies {
 
 
 compileThrift {
-    thriftExecutable "/usr/bin/thrift"
+    thriftExecutable "C:/ProgramData/chocolatey/bin/thrift.exe"
     sourceDir "$projectDir/src/main/thrift"
     outputDir "$projectDir/generated/java"
     nowarn true

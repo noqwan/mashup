@@ -7,8 +7,9 @@ public class SaleForceDtoConverter implements DtoConverter<SaleForceLeadDTO> {
 
   @Override
   public VirtualLeadDTO convertToVirtual(SaleForceLeadDTO dto) {
+
     return new VirtualLeadDTO(
-        dto.getId(),
+        "S" + dto.getId(),
         dto.getFirstName(),
         dto.getLastName(),
         dto.getAnnualRevenue(),
@@ -26,8 +27,15 @@ public class SaleForceDtoConverter implements DtoConverter<SaleForceLeadDTO> {
 
   @Override
   public SaleForceLeadDTO convertFromVirtual(VirtualLeadDTO dto) {
+
+    // Remove the 'S' prefix
+    String id = dto.getId();
+    if (id != null && id.startsWith("S")) {
+      id = id.substring(1);
+    }
+
     return new SaleForceLeadDTO(
-        dto.getId(),
+        id,
         dto.getFirstName(),
         dto.getLastName(),
         dto.getAnnualRevenue(),

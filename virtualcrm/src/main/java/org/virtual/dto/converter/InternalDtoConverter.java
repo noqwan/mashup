@@ -37,7 +37,16 @@ public class InternalDtoConverter implements DtoConverter<InternalLeadDtoWrapper
 
     InternalLeadDto ret = new InternalLeadDto();
     try {
-      ret.setId(Integer.parseInt(dto.getId()));
+      // Remove the 'I' prefix before parsing
+      String idStr = dto.getId();
+      if (idStr != null) {
+        if (idStr.startsWith("I")) {
+          idStr = idStr.substring(1);
+        }
+        ret.setId(Integer.parseInt(idStr));
+      } else {
+        ret.setId(-1);
+      }
     } catch (NumberFormatException e) {
       // Lead id will be set by the CRM himself anyway
       ret.setId(-1);
