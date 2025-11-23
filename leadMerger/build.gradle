@@ -22,7 +22,7 @@ application {
 }
 
 compileThrift {
-    thriftExecutable "C:/ProgramData/chocolatey/bin/thrift.exe"
+    thriftExecutable "/usr/bin/thrift"
     sourceDir "$projectDir/src/main/thrift"
     outputDir "$projectDir/generated/java"
     nowarn true
