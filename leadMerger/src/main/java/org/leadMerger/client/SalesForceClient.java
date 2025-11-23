@@ -1,8 +1,14 @@
-package org.virtual.service.crm;
-
+package org.leadMerger.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.stream.Collectors;
+import org.leadMerger.dto.SaleForceLeadDTO;
+import org.leadMerger.exception.ClientException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -11,53 +17,38 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
-import org.virtual.dto.SaleForceLeadDTO;
-import org.virtual.dto.VirtualLeadDTO;
-import org.virtual.dto.converter.SaleForceDtoConverter;
-import org.virtual.service.exceptions.SalesForcePropertiesException;
-import org.virtual.service.exceptions.SalesForceTokenObtentionException;
+import java.util.*;
+import org.leadMerger.exception.SalesForcePropertiesException;
+import org.leadMerger.exception.SalesForceTokenObtentionException;
 
-public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
+public class SalesForceClient {
 
   private final String uri;
-  private final Properties salesForceProperties;
+  private final Properties salesForceProperties = new Properties();
   private String authorizationToken;
 
   public SalesForceClient() {
-    this.converter = new SaleForceDtoConverter();
     authorizationToken = "";
 
-    //String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-    String salesForcePropertiesPath = /*rootPath +*/ "conf/salesforce.properties";
-    try {
-      salesForceProperties = new Properties();
-      salesForceProperties.load(new FileInputStream(salesForcePropertiesPath));
-
+    // Charger le fichier de conf depuis le classpath (ShadowJar compatible)
+    try (InputStream in = getClass().getClassLoader().getResourceAsStream("salesforce.properties")) {
+      if (in == null) {
+        throw new SalesForcePropertiesException("salesforce.properties not found in classpath");
+      }
+      salesForceProperties.load(in);
       uri = "https://" + salesForceProperties.getProperty("salesforce_uri");
     } catch (IOException e) {
       throw new SalesForcePropertiesException(e.getMessage());
     }
   }
 
-  @Override
-  protected List<SaleForceLeadDTO> findLeadsSpecific(double lowAnnualRevenue,
-      double highAnnualRevenue, String state) {
+  public List<SaleForceLeadDTO> findAllLeads() {
     List<SaleForceLeadDTO> result = new ArrayList<>();
 
     postForAuthorizationToken();
 
     String query =
-        "SELECT+Id%2C+FirstName%2C+LastName%2C+AnnualRevenue%2C+Phone%2C+CreatedDate%2C+Company%2C+State%2C+Street%2C+PostalCode%2C+City%2C+Country%2C+Address+FROM+Lead+WHERE+AnnualRevenue+%3E%3D+"
-            + lowAnnualRevenue + "+AND+AnnualRevenue+%3C%3D+" + highAnnualRevenue;
+        "SELECT+Id%2C+FirstName%2C+LastName%2C+AnnualRevenue%2C+Phone%2C+CreatedDate%2C+Company%2C+State%2C+Street%2C+PostalCode%2C+City%2C+Country%2C+Address+FROM+Lead";
 
     var mapper = new ObjectMapper();
     HttpResponse<String> response;
@@ -92,102 +83,6 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
     }
 
     return result;
-  }
-
-  @Override
-  protected List<SaleForceLeadDTO> findLeadsByDateSpecific(Calendar startDate, Calendar endDate) {
-    List<SaleForceLeadDTO> result = new ArrayList<>();
-
-    postForAuthorizationToken();
-
-    String query =
-        "SELECT+Id%2C+FirstName%2C+LastName%2C+AnnualRevenue%2C+Phone%2C+CreatedDate%2C+Company%2C+State%2C+Street%2C+PostalCode%2C+City%2C+Country%2C+Address+FROM+Lead+WHERE+CreatedDate+%3E%3D+"
-            + formatForSalesforce(startDate) + "+AND+CreatedDate+%3C%3D+" + formatForSalesforce(
-            endDate);
-
-    var mapper = new ObjectMapper();
-
-    HttpResponse<String> response;
-    try {
-      HttpClient client = HttpClient.newHttpClient();
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create(uri + "/services/data/v45.0/query/?q=" + query))
-          .headers("Authorization", "Bearer " + authorizationToken)
-          .build();
-
-      response = client.send(request,
-          HttpResponse.BodyHandlers.ofString());
-
-    } catch (IOException | InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-
-    try {
-      JsonNode root = mapper.readTree(response.body());
-      if (!root.has("records") || root.get("records").isEmpty()) {
-        return result;
-      }
-
-      for (JsonNode leadNode : root.get("records")) {
-        result.add(nodeTOLead(leadNode));
-      }
-
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
-    return result;
-  }
-
-  @Override
-  protected void addSpecific(SaleForceLeadDTO lead) {
-    //UNSUPPORTED SINCE LEADS ARE ALWAYS ADDED INTO InternalCRM
-  }
-
-  @Override
-  protected void deleteSpecific(SaleForceLeadDTO lead) {
-
-    postForAuthorizationToken();
-
-
-
-
-    try{
-      HttpClient client = HttpClient.newHttpClient();
-
-
-      String leadId = lead.getId();
-
-
-      String deleteUrl = uri+"/services/data/v45.0/sobjects/Lead/" + leadId;
-
-      HttpRequest deleteRequest = HttpRequest.newBuilder()
-          .uri(URI.create(deleteUrl))
-          .header("Authorization", "Bearer " + authorizationToken)
-          .DELETE()
-          .build();
-
-      HttpResponse<String> deleteResponse = client.send(deleteRequest, HttpResponse.BodyHandlers.ofString());
-
-      if (deleteResponse.statusCode() == 204) {
-        System.out.println("Lead deleted successfully: " + leadId);
-      } else {
-        System.out.println("Failed to delete lead. Status: " + deleteResponse.statusCode());
-        System.out.println(deleteResponse.body());
-      }
-    } catch (IOException | InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  protected VirtualLeadDTO convertToVirtual(SaleForceLeadDTO specificLead) {
-    return this.converter.convertToVirtual(specificLead);
-  }
-
-  @Override
-  protected SaleForceLeadDTO convertFromVirtual(VirtualLeadDTO virtualLead) {
-    return this.converter.convertFromVirtual(virtualLead);
   }
 
   private void postForAuthorizationToken() {
@@ -264,9 +159,4 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
         creationDate, company, state, street, postalCode, city, country);
   }
 
-  private String formatForSalesforce(Calendar cal) {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    sdf.setTimeZone(cal.getTimeZone());
-    return sdf.format(cal.getTime());
-  }
 }
