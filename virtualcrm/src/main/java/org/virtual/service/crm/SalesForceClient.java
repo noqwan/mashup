@@ -32,7 +32,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
   private final String uri;
   private final Properties salesForceProperties;
   private String authorizationToken;
-  private DecimalFormat decimalFormat;
+  private final DecimalFormat decimalFormat;
 
   public SalesForceClient() {
     this.converter = new SaleForceDtoConverter();
