@@ -35,3 +35,4 @@ project.afterEvaluate {
 }
 
 //tasks.farmRun.dependsOn
+//thrift -r --gen <langage> -out <répertoire_de_sortie> <fichier.thrift>
