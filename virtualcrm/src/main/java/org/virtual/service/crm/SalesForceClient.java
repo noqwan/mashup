@@ -11,6 +11,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,10 +32,12 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
   private final String uri;
   private final Properties salesForceProperties;
   private String authorizationToken;
+  private DecimalFormat decimalFormat;
 
   public SalesForceClient() {
     this.converter = new SaleForceDtoConverter();
     authorizationToken = "";
+    this.decimalFormat=new DecimalFormat("#.##");
 
     //String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     String salesForcePropertiesPath = /*rootPath +*/ "conf/salesforce.properties";
@@ -57,7 +60,7 @@ public class SalesForceClient extends CRMClient<SaleForceLeadDTO> {
 
     String query =
         "SELECT+Id%2C+FirstName%2C+LastName%2C+AnnualRevenue%2C+Phone%2C+CreatedDate%2C+Company%2C+State%2C+Street%2C+PostalCode%2C+City%2C+Country%2C+Address+FROM+Lead+WHERE+AnnualRevenue+%3E%3D+"
-            + lowAnnualRevenue + "+AND+AnnualRevenue+%3C%3D+" + highAnnualRevenue;
+            + decimalFormat.format(lowAnnualRevenue) + "+AND+AnnualRevenue+%3C%3D+" + decimalFormat.format(highAnnualRevenue)+"+AND+State+%3d+%27"+state+"%27";
 
     var mapper = new ObjectMapper();
     HttpResponse<String> response;
