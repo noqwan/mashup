@@ -73,9 +73,9 @@ public class Main {
   }
 
   private static void handleFindLeadsByDate() throws Exception {
-    System.out.print("Start date (dd-MM-yyyy): ");
+    System.out.print("Start date (dd/MM/yyyy): ");
     String start = scanner.nextLine();
-    System.out.print("End date (dd-MM-yyyy): ");
+    System.out.print("End date (dd/MM/yyyy): ");
     String end = scanner.nextLine();
 
     VirtualLeadDTO[] leads = service.findLeadsByDate(start, end);
