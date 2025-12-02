@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Scanner;
 import org.client.service.FactoryServiceClientVirtualCRM;
@@ -64,8 +67,11 @@ public class Main {
     double low = parseDouble(scanner.nextLine(), 0);
     System.out.print("High revenue (0 by default): ");
     double high = parseDouble(scanner.nextLine(), 0);
-    System.out.print("State (empty by default): ");
-    String state = scanner.nextLine();
+    String state;
+    do {
+        System.out.print("State (empty by default) (no numbers allowed) : ");
+        state = scanner.nextLine();
+    }while(state.matches(".*\\d.*"));
 
     VirtualLeadDTO[] leads = service.findLeads(low, high, state);
     System.out.println();
@@ -73,10 +79,17 @@ public class Main {
   }
 
   private static void handleFindLeadsByDate() throws Exception {
-    System.out.print("Start date (dd/MM/yyyy): ");
-    String start = scanner.nextLine();
-    System.out.print("End date (dd/MM/yyyy): ");
-    String end = scanner.nextLine();
+    String start;
+    do{
+        System.out.print("Start date (dd/MM/yyyy): ");
+        start = scanner.nextLine();
+    }while(!isValidDate(start));
+
+    String end;
+    do{
+        System.out.print("End date (dd/MM/yyyy): ");
+        end = scanner.nextLine();
+    }while(!isValidDate(end));
 
     VirtualLeadDTO[] leads = service.findLeadsByDate(start, end);
     System.out.println();
@@ -126,32 +139,42 @@ public class Main {
 
 
   private static VirtualLeadDTO promptLead() throws Exception {
+      boolean bonFormat = true;
     System.out.print("ID (-1 by default): ");
     String id = scanner.nextLine();
     if (id.isEmpty()) {
       id = "-1";
     }
 
-    System.out.print("First name (empty by default): ");
-    String firstName = scanner.nextLine();
-    if (firstName.isEmpty()) {
-      firstName = "";
-    }
+    String firstName;
+    do {
+        System.out.print("First name (empty by default) (no numbers allowed) : ");
+        firstName = scanner.nextLine();
+        if (firstName.isEmpty()) {
+            firstName = "";
+        }
+    }while(firstName.matches(".*\\d.*"));
 
-    System.out.print("Last name (empty by default): ");
-    String lastName = scanner.nextLine();
-    if (lastName.isEmpty()) {
-      lastName = "";
-    }
+    String lastName;
+    do {
+        System.out.print("Last name (empty by default) (no numbers allowed) : ");
+        lastName = scanner.nextLine();
+        if (lastName.isEmpty()) {
+            lastName = "";
+        }
+    }while(lastName.matches(".*\\d.*"));
 
     System.out.print("Annual revenue (0 by default): ");
     double annualRevenue = parseDouble(scanner.nextLine(), 0);
 
-    System.out.print("Phone (empty by default): ");
-    String phone = scanner.nextLine();
-    if (phone.isEmpty()) {
-      phone = "";
-    }
+    String phone;
+    do {
+        System.out.print("Phone (empty by default) (only numbers allowed) : ");
+        phone = scanner.nextLine();
+        if (phone.isEmpty()) {
+            phone = "";
+        }
+    }while(phone.matches(".*[a-zA-Z].*"));
 
     System.out.print("Company (empty by default): ");
     String company = scanner.nextLine();
@@ -165,39 +188,54 @@ public class Main {
       street = "";
     }
 
-    System.out.print("Postal code (empty by default): ");
-    String postalCode = scanner.nextLine();
-    if (postalCode.isEmpty()) {
-      postalCode = "";
-    }
+    String postalCode;
+    do {
+        System.out.print("Postal code (empty by default) (only numbers allowed) : ");
+        postalCode = scanner.nextLine();
+        if (postalCode.isEmpty()) {
+            postalCode = "";
+        }
+    }while(postalCode.matches(".*[a-zA-Z].*"));
 
-    System.out.print("City (empty by default): ");
-    String city = scanner.nextLine();
-    if (city.isEmpty()) {
-      city = "";
-    }
+    String city;
+    do {
+        System.out.print("City (empty by default) (no numbers allowed) : ");
+        city = scanner.nextLine();
+        if (city.isEmpty()) {
+            city = "";
+        }
+    }while(city.matches(".*\\d.*"));
 
-    System.out.print("State (empty by default): ");
-    String state = scanner.nextLine();
-    if (state.isEmpty()) {
-      state = "";
-    }
+    String state;
+    do {
+        System.out.print("State (empty by default) (no numbers allowed) : ");
+        state = scanner.nextLine();
+        if (state.isEmpty()) {
+            state = "";
+        }
+    }while(state.matches(".*\\d.*"));
 
-    System.out.print("Country (empty by default): ");
-    String country = scanner.nextLine();
-    if (country.isEmpty()) {
-      country = "";
-    }
+    String country;
+    do {
+        System.out.print("Country (empty by default) (no numbers allowed) : ");
+        country = scanner.nextLine();
+        if (country.isEmpty()) {
+            country = "";
+        }
+    }while(country.matches(".*\\d.*"));
 
-    System.out.print("Creation date [dd/MM/yyyy] (today if empty): ");
-    String dateInput = scanner.nextLine();
+    String dateInput;
     Date creationDate;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    if (dateInput.isEmpty()) {
-      creationDate = new Date();
-    } else {
-      creationDate = sdf.parse(dateInput);
-    }
+    do {
+        System.out.print("Creation date [dd/MM/yyyy] (today if empty): ");
+        dateInput = scanner.nextLine();
+        if (dateInput.isEmpty()) {
+            creationDate = new Date();
+        }
+    }while(!isValidDate(dateInput));
+
+    creationDate = sdf.parse(dateInput);
 
     return new VirtualLeadDTO(
         id, firstName, lastName, annualRevenue, phone,
@@ -216,6 +254,16 @@ public class Main {
       return defaultValue;
     }
   }
+
+    public static boolean isValidDate(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try {
+            LocalDate date = LocalDate.parse(dateStr, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
 
   private static void printLeads(VirtualLeadDTO[] leads) {
     if (leads == null || leads.length == 0) {
