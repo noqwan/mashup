@@ -8,12 +8,12 @@
   <!-- Thrift service -->
 
   <servlet>
-    <servlet-name>ThriftCalculatorServiceServlet</servlet-name>
+    <servlet-name>ThriftCRMServiceServlet</servlet-name>
     <servlet-class>org.internal.service.ThrifInternalServiceServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>ThriftCalculatorServiceServlet</servlet-name>
+    <servlet-name>ThriftCRMServiceServlet</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
 
