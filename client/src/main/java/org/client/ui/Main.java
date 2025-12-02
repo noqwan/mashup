@@ -225,7 +225,7 @@ public class Main {
     }while(country.matches(".*\\d.*"));
 
     String dateInput;
-    Date creationDate;
+    Date creationDate = null;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     do {
         System.out.print("Creation date [dd/MM/yyyy] (today if empty): ");
@@ -235,7 +235,9 @@ public class Main {
         }
     }while(!isValidDate(dateInput));
 
-    creationDate = sdf.parse(dateInput);
+    if (!dateInput.isEmpty()) {
+      creationDate = sdf.parse(dateInput);
+    }
 
     return new VirtualLeadDTO(
         id, firstName, lastName, annualRevenue, phone,
@@ -257,6 +259,9 @@ public class Main {
 
     public static boolean isValidDate(String dateStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        if(dateStr.isEmpty()){
+            return true;
+        }
         try {
             LocalDate date = LocalDate.parse(dateStr, formatter);
             return true;
